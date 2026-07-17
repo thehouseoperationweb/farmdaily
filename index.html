@@ -45,6 +45,7 @@
     font-size:13.5px;font-weight:700;color:var(--sub);cursor:pointer;transition:.12s}
   .act.done.on{background:var(--green);border-color:var(--green);color:#fff}
   .act.skip.on{background:var(--amber);border-color:var(--amber);color:#fff}
+  .item.miss{border-color:#c0392b;box-shadow:0 0 0 2px rgba(192,57,43,.18)}
   .memo-list{margin-top:8px}
   .memo-item{display:flex;gap:8px;align-items:flex-start;background:var(--amber-soft);
     border:1px solid #eaddc4;border-radius:10px;padding:9px 10px;margin-bottom:7px;font-size:14px}
@@ -197,6 +198,14 @@
   </div>
 </div>
 
+<div class="modal-ov" id="warnModal" onclick="closeWarn()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-ic">⚠️</div>
+    <div class="modal-msg" id="warnMsg"></div>
+    <button class="btn btn-primary" onclick="closeWarn()">OK</button>
+  </div>
+</div>
+
 <script>
 // ===== データ（アップロードのチェックシートを反映）=====
 const CHECKLIST = [
@@ -256,6 +265,7 @@ const CHECKLIST = [
 const LS_URL="fhf_url", LS_HIST="fhf_history_local";
 let status={};   // key "ai-ii" -> "done"|"skip"
 let memos=[];    // strings
+let missSet=new Set();  // 未チェックで赤枠表示するキー
 
 // ---- utils ----
 function el(id){return document.getElementById(id)}
@@ -273,7 +283,8 @@ function renderList(){
   CHECKLIST.forEach((a,ai)=>{
     const rows=a.items.map((it,ii)=>{
       const key=ai+"-"+ii;const st=status[key]||"";
-      return `<div class="item">
+      const miss=(missSet.has(key)&&!st)?" miss":"";
+      return `<div class="item${miss}" id="it-${key}">
         <div class="item-top"><span class="tag">${esc(it.freq)}</span><span class="task">${esc(it.task)}</span></div>
         <div class="acts">
           <div class="act done ${st==="done"?"on":""}" onclick="mark('${key}','done')">完了</div>
@@ -330,6 +341,18 @@ function saveRecord(){
   const name=el("name").value.trim();const date=el("date").value;
   if(!date){toast("日付を選んでください");return}
   if(!name){toast("氏名を入力してください");return}
+  // 全項目必須：未チェックがあれば止める
+  const missing=[];
+  CHECKLIST.forEach((a,ai)=>a.items.forEach((it,ii)=>{const k=ai+"-"+ii;if(!status[k])missing.push(k);}));
+  if(missing.length){
+    missSet=new Set(missing);renderList();
+    showWarn(missing.length);
+    const first=document.getElementById("it-"+missing[0]);
+    if(first)first.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  missSet=new Set();
+
   const rows=[];
   CHECKLIST.forEach((a,ai)=>a.items.forEach((it,ii)=>{
     const st=status[ai+"-"+ii];
@@ -356,6 +379,11 @@ function saveRecord(){
 function resetForm(){status={};memos=[];renderList();renderMemos();}
 function showDone(){el("doneModal").classList.add("on");}
 function closeDone(){el("doneModal").classList.remove("on");showTab("hist");}
+function showWarn(n){
+  el("warnMsg").innerHTML='チェックしていないものがあります。<br>必ず「完了」か「時間がなかった」のどちらかを選んでください。<br><span style="color:#c0392b;font-weight:800">未チェック '+n+' 件</span>';
+  el("warnModal").classList.add("on");
+}
+function closeWarn(){el("warnModal").classList.remove("on");}
 
 // ---- history ----
 function loadHist(){
