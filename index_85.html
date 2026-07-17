@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>THE HOUSE FARM 清掃</title>
+<style>
+  :root{
+    --bg:#f4f1ea; --card:#ffffff; --ink:#2f342c; --sub:#7c8471;
+    --line:#e4e0d5; --green:#4b7a44; --green-soft:#eaf2e6;
+    --amber:#c98a2b; --amber-soft:#f7ecd8; --accent:#5a7d4f;
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;font-size:16px;padding-bottom:96px}
+  header{position:sticky;top:0;z-index:20;background:var(--green);color:#fff;padding:14px 16px;
+    box-shadow:0 2px 10px rgba(0,0,0,.12)}
+  header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.04em}
+  header .sub{font-size:12px;opacity:.85;margin-top:2px}
+  .wrap{max-width:640px;margin:0 auto;padding:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
+  label{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-bottom:6px}
+  input,select,textarea{width:100%;font-size:16px;font-family:inherit;color:var(--ink);
+    border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;outline:none}
+  input:focus,textarea:focus{border-color:var(--accent)}
+  .row2{display:flex;gap:10px}
+  .row2>div{flex:1}
+  .mini{font-size:12px;color:var(--sub)}
+  .btn{border:none;border-radius:10px;padding:11px 14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+  .btn-primary{background:var(--green);color:#fff;width:100%}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink);width:100%}
+  .area{margin-bottom:8px}
+  .area-h{display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px;
+    font-weight:800;font-size:14px;letter-spacing:.06em;color:var(--accent)}
+  .area-h .cnt{font-size:11px;color:var(--sub);font-weight:600}
+  .item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;box-shadow:var(--shadow)}
+  .item-top{display:flex;gap:8px;align-items:flex-start;margin-bottom:9px}
+  .tag{flex:none;font-size:10px;font-weight:700;color:var(--accent);background:var(--green-soft);
+    border-radius:6px;padding:3px 7px;margin-top:2px}
+  .task{font-size:14.5px;flex:1}
+  .acts{display:flex;gap:8px}
+  .act{flex:1;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 6px;
+    font-size:13.5px;font-weight:700;color:var(--sub);cursor:pointer;transition:.12s}
+  .act.done.on{background:var(--green);border-color:var(--green);color:#fff}
+  .act.skip.on{background:var(--amber);border-color:var(--amber);color:#fff}
+  .memo-list{margin-top:8px}
+  .memo-item{display:flex;gap:8px;align-items:flex-start;background:var(--amber-soft);
+    border:1px solid #eaddc4;border-radius:10px;padding:9px 10px;margin-bottom:7px;font-size:14px}
+  .memo-item .x{flex:none;color:#b06a1f;font-weight:800;cursor:pointer;padding:0 4px}
+  .memo-add{display:flex;gap:8px;margin-top:8px}
+  .memo-add input{flex:1}
+  .memo-add button{flex:none;width:auto;padding:11px 16px}
+  .barwrap{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:10px 14px;z-index:30}
+  .barwrap .inner{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .prog{flex:1}
+  .prog .track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  .prog .fill{height:100%;background:var(--green);width:0;transition:.25s}
+  .prog .lbl{font-size:11px;color:var(--sub);margin-top:3px;font-weight:600}
+  .barwrap .btn-primary{width:auto;flex:none;padding:12px 20px}
+  .tabbar{display:flex;gap:8px;margin-bottom:14px}
+  .tabbar .chip{flex:1;text-align:center;border:1px solid var(--line);background:#fff;color:var(--sub);
+    border-radius:999px;padding:9px 14px;font-size:14px;font-weight:700;cursor:pointer}
+  .tabbar .chip.on{background:var(--green);border-color:var(--green);color:#fff}
+  .hist{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .hist h4{margin:0 0 4px;font-size:14px}
+  .hist .meta{font-size:12px;color:var(--sub);margin-bottom:8px}
+  .hist .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;margin-right:6px}
+  .pill.g{background:var(--green-soft);color:var(--green)}
+  .pill.a{background:var(--amber-soft);color:#a4701f}
+  .hist details{margin-top:8px}
+  .hist summary{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600}
+  .hist ul{margin:8px 0 0;padding-left:16px;font-size:13px}
+  .hist li{margin-bottom:3px}
+  .notice{background:#fdecea;border:1px solid #f3c2bb;border-left:4px solid #c0392b;
+    border-radius:12px;padding:13px 14px;margin-bottom:14px;color:#c0392b;font-size:13.5px;font-weight:700;line-height:1.7}
+  .empty{text-align:center;color:var(--sub);font-size:14px;padding:30px 10px}
+  .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#2f342c;color:#fff;
+    padding:11px 18px;border-radius:99px;font-size:14px;font-weight:600;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90%;text-align:center}
+  .toast.on{opacity:1}
+  .modal-ov{position:fixed;inset:0;background:rgba(47,52,44,.5);display:none;align-items:center;
+    justify-content:center;z-index:100;padding:24px}
+  .modal-ov.on{display:flex}
+  .modal{background:#fff;border-radius:18px;padding:26px 22px;max-width:360px;width:100%;text-align:center;
+    box-shadow:0 16px 50px rgba(0,0,0,.25);animation:pop .25s ease}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal-ic{font-size:40px;margin-bottom:8px}
+  .modal-msg{font-size:16px;font-weight:700;color:var(--ink);line-height:1.7;margin-bottom:20px}
+  details.setup summary{font-size:13px;color:var(--accent);font-weight:700;cursor:pointer}
+  .warn{background:var(--amber-soft);border:1px solid #eaddc4;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#8a5a1a;margin-bottom:12px}
+  .ok{color:var(--green);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1>THE HOUSE FARM 清掃</h1>
+  <div class="sub">開店準備・メンテナンス チェック</div>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <div class="chip on" id="tabCheck" onclick="showTab('check')">チェック</div>
+    <div class="chip" id="tabHist" onclick="showTab('hist')">履歴</div>
+    <div class="chip" id="tabSet" onclick="showTab('set')">設定</div>
+  </div>
+
+  <!-- CHECK VIEW -->
+  <div id="viewCheck">
+    <div class="warn" id="noUrlWarn" style="display:none">
+      まだGoogleスプレッドシートと接続していません。「設定」タブでURLを登録すると全員分が記録されます。
+    </div>
+    <div class="card">
+      <div class="row2">
+        <div>
+          <label>日付</label>
+          <input type="date" id="date">
+        </div>
+        <div>
+          <label>氏名</label>
+          <input type="text" id="name" placeholder="名前を入力">
+        </div>
+      </div>
+    </div>
+
+    <div id="list"></div>
+
+    <div class="card">
+      <label>メンテナンスが必要と感じた箇所のメモ</label>
+      <div class="mini" style="margin-bottom:8px">気になった場所・直したい所を書いて追加してください。</div>
+      <div class="memo-list" id="memoList"></div>
+      <div class="memo-add">
+        <input type="text" id="memoInput" placeholder="例：GAZEBOのクッションが破れかけ">
+        <button class="btn btn-primary" style="width:auto" onclick="addMemo()">追加</button>
+      </div>
+    </div>
+
+    <div class="notice">
+      ブロワーや高圧洗浄機が壊れたなどあれば、放置せず、店長に必ず報告→店長より吉野へ報告を必ずお願いします。壊れていても吉野に伝わらないことがあり、結果エリアが汚れてしまったままにならないようお願いします。
+    </div>
+  </div>
+
+  <!-- HISTORY VIEW -->
+  <div id="viewHist" style="display:none">
+    <div class="card">
+      <button class="btn btn-ghost" onclick="loadHist()">最新を読み込む</button>
+      <div class="mini" style="margin-top:8px" id="histSrc"></div>
+    </div>
+    <div id="histList"></div>
+  </div>
+
+  <!-- SETTINGS VIEW -->
+  <div id="viewSet" style="display:none">
+    <div class="card">
+      <label>GoogleスプレッドシートのWebアプリURL</label>
+      <input type="text" id="urlInput" placeholder="https://script.google.com/macros/s/..../exec">
+      <div style="height:10px"></div>
+      <button class="btn btn-primary" onclick="saveUrl()">保存して接続</button>
+      <div class="mini" id="urlStatus" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <details class="setup">
+        <summary>接続の設定手順（初回だけ）</summary>
+        <ol style="font-size:13px;padding-left:18px;line-height:1.7">
+          <li>Googleドライブで新しいスプレッドシートを作成</li>
+          <li>上部メニューの「拡張機能」→「Apps Script」を開く</li>
+          <li>配布した <b>Code.gs</b> の中身を全部貼り付けて保存</li>
+          <li>右上「デプロイ」→「新しいデプロイ」→種類は「ウェブアプリ」</li>
+          <li>「次のユーザーとして実行：自分」「アクセスできるユーザー：全員」に設定</li>
+          <li>表示された <b>ウェブアプリのURL</b> をコピー</li>
+          <li>このページ上の入力欄に貼り付けて「保存して接続」</li>
+        </ol>
+        <div class="mini">※ 全スタッフのスマホで同じURLを登録すれば、全員の記録が同じシートに溜まります。</div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div class="barwrap" id="bottomBar">
+  <div class="inner">
+    <div class="prog">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <div class="lbl" id="progLbl">0 / 0 入力済み</div>
+    </div>
+    <button class="btn btn-primary" onclick="saveRecord()">完了報告をする</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-ov" id="doneModal" onclick="closeDone()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-ic">🌿</div>
+    <div class="modal-msg">今日も気持ち良い空間でお客様に喜んでもらえそうです。頑張っていきましょう！</div>
+    <button class="btn btn-primary" onclick="closeDone()">OK</button>
+  </div>
+</div>
+
+<script>
+// ===== データ（アップロードのチェックシートを反映）=====
+const CHECKLIST = [
+  {area:"DOGRUN", items:[
+    {freq:"毎日", task:"全体をブロワーで飛ばしたか？"},
+    {freq:"毎日", task:"アトリエのテーブルの上、洗面所は綺麗か？"},
+    {freq:"毎日", task:"犬のフンはないか？"},
+    {freq:"毎日", task:"洗面所は綺麗か？"},
+    {freq:"毎日", task:"プールの水は綺麗か？"},
+    {freq:"毎週土曜日朝", task:"端っこにある枯葉を集めて捨てる"},
+    {freq:"毎週土曜日朝", task:"TJアベニューの雑草を取る"},
+  ]},
+  {area:"BBQエリア", items:[
+    {freq:"毎日", task:"全体をブロワーで飛ばしたか？"},
+    {freq:"一日置き", task:"白い池は高圧洗浄で綺麗にしたか？"},
+    {freq:"毎日", task:"水は濁ってないか？"},
+    {freq:"利用時", task:"各ブースのテーブルは綺麗か？"},
+    {freq:"利用時", task:"各ブースのキッチンは綺麗か？"},
+    {freq:"毎週土曜日朝", task:"各ブースに雑草はないか？"},
+  ]},
+  {area:"GAZEBO", items:[
+    {freq:"毎日", task:"全体をブロワーで飛ばしたか？"},
+    {freq:"毎日", task:"ピンクの座席は綺麗か？（洗剤とスポンジで拭き取る）"},
+    {freq:"一日置き", task:"クッションが綺麗か？"},
+    {freq:"毎週土曜日", task:"クッションを剥がしてハイターにつけおきして乾かす"},
+    {freq:"毎週土曜日朝", task:"端っこにある枯葉を集めて捨てる"},
+  ]},
+  {area:"SOFAROOM", items:[
+    {freq:"毎日", task:"部屋の中は綺麗か？"},
+    {freq:"随時", task:"布はコインランドリーへ"},
+  ]},
+  {area:"テラス席", items:[
+    {freq:"毎日", task:"テーブル、椅子、ソファーは綺麗か？"},
+    {freq:"毎日", task:"花が枯れてたりカビはないか？"},
+    {freq:"毎日", task:"ゴミは落ちていないか？"},
+    {freq:"随時", task:"布はコインランドリーへ"},
+  ]},
+  {area:"トイレ", items:[
+    {freq:"毎日", task:"中の掃除をしたか？"},
+    {freq:"毎日", task:"窓枠汚くないか？"},
+    {freq:"毎日", task:"手洗い場　綺麗か？"},
+  ]},
+  {area:"駐車場", items:[
+    {freq:"毎日", task:"灰皿は綺麗にしたか？"},
+    {freq:"毎日", task:"ゴミは落ちていないか？"},
+  ]},
+  {area:"SHOP", items:[
+    {freq:"毎日", task:"ごみ、埃、蜘蛛の巣はないか？"},
+    {freq:"毎週土曜日朝", task:"大きく埃が積もってるところなどがあれば対応する。"},
+    {freq:"毎週土曜日朝", task:"トイレ前の棚を拭く"},
+  ]},
+  {area:"雑草取り", items:[
+    {freq:"ゲストが少ない時毎日", task:"1日20分気になるところをやる。"},
+  ]},
+];
+
+const LS_URL="fhf_url", LS_HIST="fhf_history_local";
+let status={};   // key "ai-ii" -> "done"|"skip"
+let memos=[];    // strings
+
+// ---- utils ----
+function el(id){return document.getElementById(id)}
+function todayStr(){const d=new Date();const p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
+function load(k,f){try{const v=JSON.parse(localStorage.getItem(k));return v==null?f:v}catch(e){return f}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function getUrl(){return (localStorage.getItem(LS_URL)||"").trim()}
+function toast(m){const t=el("toast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2200)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function statusJp(s){return s==="done"?"完了":(s==="skip"?"時間がなかった":s)}
+
+// ---- checklist render ----
+function renderList(){
+  let html="";
+  CHECKLIST.forEach((a,ai)=>{
+    const rows=a.items.map((it,ii)=>{
+      const key=ai+"-"+ii;const st=status[key]||"";
+      return `<div class="item">
+        <div class="item-top"><span class="tag">${esc(it.freq)}</span><span class="task">${esc(it.task)}</span></div>
+        <div class="acts">
+          <div class="act done ${st==="done"?"on":""}" onclick="mark('${key}','done')">完了</div>
+          <div class="act skip ${st==="skip"?"on":""}" onclick="mark('${key}','skip')">時間がなかった</div>
+        </div></div>`;
+    }).join("");
+    html+=`<div class="area">
+      <div class="area-h"><span>${esc(a.area)}</span><span class="cnt">${a.items.length}項目</span></div>${rows}</div>`;
+  });
+  el("list").innerHTML=html;
+  updateProg();
+}
+function mark(key,val){status[key]=(status[key]===val)?"":val;renderList()}
+
+// 同じ日に他の人がチェックした内容を読み込んで反映（誰が最後に報告してもOK）
+function loadDayState(reset){
+  if(reset){status={};renderList();}
+  const url=getUrl();if(!url)return;
+  const date=el("date").value;if(!date)return;
+  jsonp(url,function(res){
+    if(res&&res.ok&&Array.isArray(res.rows)){
+      const map={};
+      res.rows.forEach(r=>{
+        if(r[1]!==date||r[3]!=="チェック")return;
+        const k=r[4]+"||"+r[6];const at=r[0]||"";
+        if(!map[k]||at>=map[k].at)map[k]={status:r[7],at:at};
+      });
+      CHECKLIST.forEach((a,ai)=>a.items.forEach((it,ii)=>{
+        const k=a.area+"||"+it.task;const key=ai+"-"+ii;
+        if(map[k]&&!status[key]){
+          status[key]=map[k].status==="完了"?"done":(map[k].status==="時間がなかった"?"skip":"");
+        }
+      }));
+      renderList();
+    }
+  });
+}
+function totalItems(){return CHECKLIST.reduce((s,a)=>s+a.items.length,0)}
+function updateProg(){
+  const done=Object.values(status).filter(v=>v).length;const tot=totalItems();
+  el("fill").style.width=(tot?done/tot*100:0)+"%";
+  el("progLbl").textContent=done+" / "+tot+" 入力済み";
+}
+
+// ---- memos ----
+function renderMemos(){
+  el("memoList").innerHTML=memos.map((m,i)=>`<div class="memo-item"><span style="flex:1">${esc(m)}</span><span class="x" onclick="delMemo(${i})">×</span></div>`).join("");
+}
+function addMemo(){const v=el("memoInput").value.trim();if(!v)return;memos.push(v);el("memoInput").value="";renderMemos()}
+function delMemo(i){memos.splice(i,1);renderMemos()}
+
+// ---- save record ----
+function saveRecord(){
+  const name=el("name").value.trim();const date=el("date").value;
+  if(!date){toast("日付を選んでください");return}
+  if(!name){toast("氏名を入力してください");return}
+  const rows=[];
+  CHECKLIST.forEach((a,ai)=>a.items.forEach((it,ii)=>{
+    const st=status[ai+"-"+ii];
+    if(st)rows.push({type:"チェック",area:a.area,freq:it.freq,task:it.task,status:statusJp(st)});
+  }));
+  memos.forEach(m=>rows.push({type:"メンテナンスメモ",area:"",freq:"",task:m,status:""}));
+  if(rows.length===0){toast("入力がありません");return}
+
+  const payload={date,name,rows};
+  // local backup
+  const hist=load(LS_HIST,[]);hist.unshift(Object.assign({id:Date.now()},payload));save(LS_HIST,hist);
+
+  const url=getUrl();
+  if(!url){
+    resetForm();showDone();return;
+  }
+  toast("送信中…");
+  fetch(url,{method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+    body:new URLSearchParams({data:JSON.stringify(payload)}).toString()})
+    .then(()=>{resetForm();showDone();})
+    .catch(()=>{toast("送信に失敗。通信環境を確認してください（端末には保存済み）");});
+}
+function resetForm(){status={};memos=[];renderList();renderMemos();}
+function showDone(){el("doneModal").classList.add("on");}
+function closeDone(){el("doneModal").classList.remove("on");showTab("hist");}
+
+// ---- history ----
+function loadHist(){
+  const url=getUrl();
+  if(!url){el("histSrc").textContent="未接続：この端末に保存された記録を表示中";renderLocalHist();return;}
+  el("histSrc").textContent="読み込み中…";
+  jsonp(url,function(res){
+    if(res && res.ok && Array.isArray(res.rows)){
+      el("histSrc").innerHTML='<span class="ok">スプレッドシートの全員分を表示中</span>';
+      renderRemoteHist(res.rows);
+    }else{
+      el("histSrc").textContent="読み込めませんでした。この端末の記録を表示します。";
+      renderLocalHist();
+    }
+  });
+}
+function jsonp(url,cb){
+  const name="__fhfcb"+Date.now();
+  const s=document.createElement("script");
+  let done=false;
+  window[name]=function(res){done=true;cb(res);cleanup();};
+  function cleanup(){try{delete window[name]}catch(e){window[name]=undefined}if(s.parentNode)s.parentNode.removeChild(s)}
+  s.onerror=function(){if(!done)cb(null);cleanup()};
+  s.src=url+(url.indexOf("?")>=0?"&":"?")+"callback="+name+"&t="+Date.now();
+  document.body.appendChild(s);
+  setTimeout(function(){if(!done){cb(null);cleanup()}},12000);
+}
+// remote rows: [savedAt,date,name,種別,エリア,頻度,項目,状態]
+function renderRemoteHist(rows){
+  const groups={};const order=[];
+  rows.forEach(r=>{
+    const key=(r[0]||"")+"|"+(r[1]||"")+"|"+(r[2]||"");
+    if(!groups[key]){groups[key]={date:r[1],name:r[2],checks:[],memos:[]};order.push(key);}
+    if(r[3]==="メンテナンスメモ")groups[key].memos.push(r[6]);
+    else groups[key].checks.push({area:r[4],task:r[6],status:r[7]});
+  });
+  order.reverse();
+  if(order.length===0){el("histList").innerHTML='<div class="empty">まだ記録がありません</div>';return}
+  el("histList").innerHTML=order.map(k=>{
+    const g=groups[k];
+    const done=g.checks.filter(c=>c.status==="完了").length;
+    const skip=g.checks.filter(c=>c.status==="時間がなかった").length;
+    return histCard(g.date,g.name,done,skip,g.memos,g.checks,null);
+  }).join("");
+}
+function renderLocalHist(){
+  const hist=load(LS_HIST,[]);
+  if(hist.length===0){el("histList").innerHTML='<div class="empty">まだ記録がありません</div>';return}
+  el("histList").innerHTML=hist.map(h=>{
+    const checks=h.rows.filter(r=>r.type==="チェック");
+    const mem=h.rows.filter(r=>r.type==="メンテナンスメモ").map(r=>r.task);
+    const done=checks.filter(c=>c.status==="完了").length;
+    const skip=checks.filter(c=>c.status==="時間がなかった").length;
+    return histCard(h.date,h.name,done,skip,mem,checks,h.id);
+  }).join("");
+}
+function histCard(date,name,done,skip,mem,checks,localId){
+  return `<div class="hist">
+    <h4>${esc(date)}　${esc(name)}</h4>
+    <div class="meta">
+      <span class="pill g">完了 ${done}</span>
+      <span class="pill a">時間なし ${skip}</span>
+      ${mem&&mem.length?`<span class="pill a">メモ ${mem.length}</span>`:""}
+    </div>
+    <details><summary>詳細を見る</summary>
+      <ul>${checks.map(c=>`<li>[${esc(c.area)}] ${esc(c.task)} — <b>${esc(c.status)}</b></li>`).join("")}</ul>
+      ${mem&&mem.length?`<div style="margin-top:8px" class="mini"><b>メンテナンスメモ</b></div><ul>${mem.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`:""}
+    </details>
+  </div>`;
+}
+
+// ---- settings ----
+function saveUrl(){
+  let u=el("urlInput").value.trim();
+  if(u && u.indexOf("http")!==0){toast("URLの形式が正しくありません");return;}
+  localStorage.setItem(LS_URL,u);
+  el("urlStatus").innerHTML=u?'<span class="ok">接続を保存しました</span>':"URLを空にしました（未接続）";
+  el("noUrlWarn").style.display=u?"none":"";
+  toast("保存しました");
+}
+
+// ---- tabs ----
+function showTab(t){
+  el("viewCheck").style.display=t==="check"?"":"none";
+  el("viewHist").style.display=t==="hist"?"":"none";
+  el("viewSet").style.display=t==="set"?"":"none";
+  el("bottomBar").style.display=t==="check"?"":"none";
+  el("tabCheck").classList.toggle("on",t==="check");
+  el("tabHist").classList.toggle("on",t==="hist");
+  el("tabSet").classList.toggle("on",t==="set");
+  if(t==="hist")loadHist();
+  if(t==="check")loadDayState(false);
+}
+
+// ---- init ----
+el("date").value=todayStr();
+el("urlInput").value=getUrl();
+el("noUrlWarn").style.display=getUrl()?"none":"";
+el("date").addEventListener("change",function(){loadDayState(true);});
+renderList();renderMemos();loadDayState(false);
+</script>
+</body>
+</html>
