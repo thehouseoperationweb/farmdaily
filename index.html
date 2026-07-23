@@ -262,6 +262,8 @@ const CHECKLIST = [
   ]},
 ];
 
+// 全端末が自動で接続されるよう、公開済みのWebアプリURLを埋め込み
+const DEFAULT_URL="https://script.google.com/macros/s/AKfycbyGItEEARH-bGnvxKn8iGYct-OI0jdcnUwAiiW5gUcll8ATmUqBtAyHrnr7AGVcLgrl5A/exec";
 const LS_URL="fhf_url", LS_HIST="fhf_history_local";
 let status={};   // key "ai-ii" -> "done"|"skip"
 let memos=[];    // strings
@@ -272,7 +274,7 @@ function el(id){return document.getElementById(id)}
 function todayStr(){const d=new Date();const p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
 function load(k,f){try{const v=JSON.parse(localStorage.getItem(k));return v==null?f:v}catch(e){return f}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-function getUrl(){return (localStorage.getItem(LS_URL)||"").trim()}
+function getUrl(){const u=(localStorage.getItem(LS_URL)||"").trim();return u||DEFAULT_URL;}
 function toast(m){const t=el("toast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2200)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function statusJp(s){return s==="done"?"完了":(s==="skip"?"時間がなかった":s)}
