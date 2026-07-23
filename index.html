@@ -14,7 +14,7 @@
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.5;font-size:16px;padding-bottom:96px}
+    background:var(--bg);color:var(--ink);line-height:1.5;font-size:16px;padding-bottom:32px}
   header{position:sticky;top:0;z-index:20;background:var(--green);color:#fff;padding:14px 16px;
     box-shadow:0 2px 10px rgba(0,0,0,.12)}
   header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.04em}
@@ -140,6 +140,14 @@
     <div class="notice">
       ブロワーや高圧洗浄機が壊れたなどあれば、放置せず、店長に必ず報告→店長より吉野へ報告を必ずお願いします。壊れていても吉野に伝わらないことがあり、結果エリアが汚れてしまったままにならないようお願いします。
     </div>
+
+    <div class="card" style="text-align:center">
+      <div class="prog" style="margin-bottom:12px">
+        <div class="track"><div class="fill" id="fill"></div></div>
+        <div class="lbl" id="progLbl">0 / 0 入力済み</div>
+      </div>
+      <button class="btn btn-primary" style="font-size:17px;padding:15px" onclick="saveRecord()">完了報告をする</button>
+    </div>
   </div>
 
   <!-- HISTORY VIEW -->
@@ -175,16 +183,6 @@
         <div class="mini">※ 全スタッフのスマホで同じURLを登録すれば、全員の記録が同じシートに溜まります。</div>
       </details>
     </div>
-  </div>
-</div>
-
-<div class="barwrap" id="bottomBar">
-  <div class="inner">
-    <div class="prog">
-      <div class="track"><div class="fill" id="fill"></div></div>
-      <div class="lbl" id="progLbl">0 / 0 入力済み</div>
-    </div>
-    <button class="btn btn-primary" onclick="saveRecord()">完了報告をする</button>
   </div>
 </div>
 
@@ -472,7 +470,6 @@ function showTab(t){
   el("viewCheck").style.display=t==="check"?"":"none";
   el("viewHist").style.display=t==="hist"?"":"none";
   el("viewSet").style.display=t==="set"?"":"none";
-  el("bottomBar").style.display=t==="check"?"":"none";
   el("tabCheck").classList.toggle("on",t==="check");
   el("tabHist").classList.toggle("on",t==="hist");
   el("tabSet").classList.toggle("on",t==="set");
